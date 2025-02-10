@@ -1,0 +1,11 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#myChart {
+    width: 80%;  /* Ancho de la gráfica */
+    height: 400px; /* Altura de la gráfica */
+    max-width: 100%;
+    margin: 0 auto;
+}

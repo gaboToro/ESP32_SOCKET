@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor INA219</title>
+    <link rel="stylesheet" href="/styles.css"> <!-- Enlace a styles.css -->
+    <script src="/chart.min.js"></script> <!-- Enlace a Chart.js -->
+    <script>
+        // Función para obtener los datos del ESP32
+        async function getData() {
+            try {
+                let response = await fetch('/data'); // Petición al ESP32 para obtener los datos
+                if (!response.ok) throw new Error("⚠️ Error al obtener datos");
+
+                let data = await response.json();
+                console.log("📡 Datos recibidos:", data); // Debug en consola
+                return data;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        }
+
+        // Función para actualizar el gráfico
+        async function updateChart(chart) {
+            let data = await getData();
+            if (!data) return; // Si hay error, no actualiza
+
+            console.log("Actualizar gráfico con los datos:", data); // Debug en consola
+
+            let now = new Date().toLocaleTimeString();
+            
+            // Asegurar que los datos son válidos antes de agregarlos
+            if (!isNaN(data.voltage) && !isNaN(data.current)) {
+                chart.data.labels.push(now);
+                chart.data.datasets[0].data.push(data.voltage);
+
+                // Limitar el número de puntos en la gráfica
+                if (chart.data.labels.length > 10) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                }
+
+                chart.update();
+            } else {
+                console.warn("⚠️ Datos inválidos recibidos:", data);
+            }
+
+            setTimeout(() => updateChart(chart), 3000); // Actualizar cada 3 segundos
+        }
+
+        // Al cargar la página, inicializar el gráfico
+        window.onload = function() {
+            let ctx = document.getElementById('myChart')?.getContext('2d');
+            if (ctx) {
+                let chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Voltaje (V)',
+                            data: [],
+                            borderColor: 'blue',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+
+                updateChart(chart); // Iniciar la actualización del gráfico
+            } else {
+                console.error("No se pudo obtener el contexto del canvas.");
+            }
+        };
+    </script>
+</head>
+<body>
+    <h1>Monitor INA219</h1>
+    <canvas id="myChart"></canvas> <!-- Gráfico de voltaje -->
+</body>
+</html>
