@@ -9,16 +9,20 @@ PORT = 12345
 # Configurar la ventana de gráficos
 plt.ion()  # Modo interactivo para gráficos en tiempo real
 fig, ax = plt.subplots()
-ax.set_title('Monitor de Voltaje y Corriente')
+ax.set_title('Monitor de Sensores')
 ax.set_xlabel('Tiempo (s)')
 ax.set_ylabel('Valor')
 line_voltage, = ax.plot([], [], label="Voltaje (V)", color='blue')
 line_current, = ax.plot([], [], label="Corriente (mA)", color='red')
+line_temp, = ax.plot([], [], label="Temperatura (°C)", color='green')
+line_pressure, = ax.plot([], [], label="Presión (hPa)", color='purple')
 
 # Inicializar las listas de datos
 time_data = deque(maxlen=10)
 voltage_data = deque(maxlen=10)
 current_data = deque(maxlen=10)
+temp_data = deque(maxlen=10)
+pressure_data = deque(maxlen=10)
 
 # Crear socket cliente
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,17 +34,21 @@ try:
     while True:
         data = client_socket.recv(1024).decode().strip()
         if data:
-            voltage, current = map(float, data.split(","))
-            print(f"Voltaje: {voltage:.2f} V, Corriente: {current:.2f} mA")
+            voltage, current, temperature, pressure = map(float, data.split(","))
+            print(f"Voltaje: {voltage:.2f} V, Corriente: {current:.2f} mA, Temp: {temperature:.2f} °C, Presión: {pressure:.2f} hPa")
 
             # Añadir datos a las listas
             time_data.append(len(time_data))  # Tiempo en segundos
             voltage_data.append(voltage)
             current_data.append(current)
+            temp_data.append(temperature)
+            pressure_data.append(pressure)
 
             # Actualizar gráficos
             line_voltage.set_data(time_data, voltage_data)
             line_current.set_data(time_data, current_data)
+            line_temp.set_data(time_data, temp_data)
+            line_pressure.set_data(time_data, pressure_data)
 
             # Ajustar los ejes y actualizar la gráfica
             ax.relim()
