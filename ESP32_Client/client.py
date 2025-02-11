@@ -34,6 +34,7 @@ try:
     while True:
         data = client_socket.recv(1024).decode().strip()
         if data:
+            # Separar los datos recibidos
             voltage, current, temperature, pressure = map(float, data.split(","))
             print(f"Voltaje: {voltage:.2f} V, Corriente: {current:.2f} mA, Temp: {temperature:.2f} °C, Presión: {pressure:.2f} hPa")
 
@@ -54,7 +55,10 @@ try:
             ax.relim()
             ax.autoscale_view()
             ax.legend(loc='upper left')
-            plt.pause(0.1)  # Pausa corta para actualizar el gráfico
+
+            # Redibujar y actualizar la gráfica
+            plt.draw()
+            plt.pause(0.05)  # Pausa corta para actualizar el gráfico
 
 except KeyboardInterrupt:
     print("\nDesconectando...")
