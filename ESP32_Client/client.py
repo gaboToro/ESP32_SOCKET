@@ -26,15 +26,12 @@ PORT = 5000
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((ESP32_IP, PORT))
 
-print("Conectado al ESP32. Recibiendo datos...")
-
 try:
     while True:
         data = client_socket.recv(1024).decode().strip()
         if data:
-            # Separar los datos recibidos
-            voltage, current, temperature, pressure = map(float, data.split(","))
-            print(f"Voltaje: {voltage:.2f} V, Corriente: {current:.2f} mA, Temp: {temperature:.2f} °C, Presión: {pressure:.2f} hPa")
+            voltage, current, temperature, rpm = map(float, data.split(","))
+            print(f"V: {voltage}V, I: {current}mA, T: {temperature}°C, RPM: {rpm}")
 
             # Insertar datos en MySQL
             sql = "INSERT INTO mediciones (voltaje, corriente, temperatura, presion) VALUES (%s, %s, %s, %s)"
@@ -43,7 +40,6 @@ try:
             db_conn.commit()  # Guardar los cambios en la base de datos
 
 except KeyboardInterrupt:
-    print("\nDesconectando...")
     client_socket.close()
     cursor.close()
     db_conn.close()

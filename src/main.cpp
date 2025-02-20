@@ -2,12 +2,13 @@
 #include <WiFi.h>
 #include "ina219_VOLT.h"
 #include "lm35_TEMP.h"
-#include "mps20n0040d_PRES.h"
+#include "mh_flyingfish_RPM.h"
 #include "lcd_PANTALLA.h"
 
 const char *ssid = "ESP32_G2";
 const char *password = "Grupo_02";
-WiFiServer server(12345);
+WiFiServer server(5000);
+//WiFiServer server(12345);
 
 void setup() {
     Serial.begin(115200);
@@ -15,11 +16,11 @@ void setup() {
     Serial.println("WiFi AP creado. IP: " + WiFi.softAPIP().toString());
     
     setupINA219();
-    setupMPS20N0040D();
+    setupMHFlyingFish();
     setupLCD();
     
     server.begin();
-    Serial.println("Servidor de sockets iniciado.");
+    Serial.println("Servidor iniciado.");
 }
 
 void loop() {
@@ -32,19 +33,14 @@ void loop() {
             String current = voltage.substring(voltage.indexOf(",") + 1);
             voltage = voltage.substring(0, voltage.indexOf(","));
             String temperature = String(readLM35Data());
-            String pressure = String(readMPS20N0040DData());
+            String rpm = String(readMHFlyingFishData());
             
-            // Mostrar en LCD
-            displayData(voltage, current, temperature, pressure);
-            
-            // Enviar datos al cliente
-            String data = voltage + "," + current + "," + temperature + "," + pressure + "\n";
+            displayData(voltage, current, temperature, rpm);
+            String data = voltage + "," + current + "," + temperature + "," + rpm + "\n";
             client.print(data);
             Serial.println("Datos enviados: " + data);
-
-            delay(3000);  // Espera 3 segundos antes de enviar de nuevo
+            delay(3000);
         }
         client.stop();
-        Serial.println("Cliente desconectado.");
     }
 }
