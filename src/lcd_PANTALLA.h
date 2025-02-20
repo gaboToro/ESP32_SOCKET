@@ -7,6 +7,6 @@
 extern LiquidCrystal_I2C lcd;
 
 void setupLCD();
-void displayData(String voltage, String current, String temperature, String pressure);
+void displayData(String voltage, String current, String temperature, String rpm);
 
 #endif

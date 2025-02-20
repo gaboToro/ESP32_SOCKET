@@ -7,10 +7,10 @@ void setupLCD() {
     lcd.print("Iniciando...");
 }
 
-void displayData(String voltage, String current, String temperature, String pressure) {
+void displayData(String voltage, String current, String temperature, String rpm) {
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("V:" + voltage + " I:" + current);
     lcd.setCursor(0, 1);
-    lcd.print("T:" + temperature + " P:" + pressure);
+    lcd.print("T:" + temperature + " RPM:" + rpm);
 }

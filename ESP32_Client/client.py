@@ -4,8 +4,8 @@ import mysql.connector
 # Parámetros de conexión a MySQL
 db_config = {
     "host": "localhost",
-    "user": "root",  # Si tienes otro usuario, cámbialo
-    "password": "Grupo_02",  # Coloca la contraseña de MySQL aquí
+    "user": "root",  # Usuario
+    "password": "Grupo_02",  # Contraseña de MySQL 
     "database": "sensores"
 }
 
@@ -34,8 +34,8 @@ try:
             print(f"V: {voltage}V, I: {current}mA, T: {temperature}°C, RPM: {rpm}")
 
             # Insertar datos en MySQL
-            sql = "INSERT INTO mediciones (voltaje, corriente, temperatura, presion) VALUES (%s, %s, %s, %s)"
-            values = (voltage, current, temperature, pressure)
+            sql = "INSERT INTO mediciones (voltaje, corriente, temperatura, RPM) VALUES (%s, %s, %s, %s)"
+            values = (voltage, current, temperature, rpm)
             cursor.execute(sql, values)
             db_conn.commit()  # Guardar los cambios en la base de datos
 
